@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mappa Mentale - Lo Stendardo di Ur</title>
+    <title>Lo Stendardo di Ur - Mappa & Quiz</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome per Icone -->
@@ -74,6 +74,17 @@
                 linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
                 linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
         }
+        
+        /* Quiz Button Animation */
+        .quiz-btn-glow {
+            animation: pulse-glow 2s infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(234, 179, 8, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0); }
+        }
     </style>
 </head>
 <body class="h-full flex flex-col bg-slate-950 select-none overflow-hidden">
@@ -92,31 +103,41 @@
             </div>
         </div>
 
-        <!-- Controls Toolbar -->
-        <div class="flex items-center gap-2">
+        <!-- Controls Toolbar & Quiz Button -->
+        <div class="flex items-center gap-4">
+            
+            <!-- NEW: Pulsante Quiz -->
+            <a href="quiz.html" target="_blank" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded-lg font-bold text-sm transition-all flex items-center gap-2 quiz-btn-glow shadow-lg shadow-yellow-600/20">
+                <i class="fa-solid fa-gamepad"></i>
+                <span class="hidden sm:inline">Vai al Quiz (16 Domande)</span>
+                <span class="sm:hidden">Quiz</span>
+            </a>
+
+            <div class="h-6 w-px bg-slate-800 mx-1 hidden md:block"></div>
+
             <!-- View Mode Switcher -->
-            <div class="bg-slate-800/80 p-1 rounded-xl border border-slate-700/60 flex text-xs">
+            <div class="bg-slate-800/80 p-1 rounded-xl border border-slate-700/60 hidden md:flex text-xs">
                 <button id="btn-tree-view" class="px-3 py-1.5 rounded-lg font-medium bg-emerald-600 text-white transition flex items-center gap-1.5 shadow-sm">
                     <i class="fa-solid fa-diagram-project"></i>
-                    <span class="hidden md:inline">Mappa Interattiva</span>
+                    <span>Mappa Interattiva</span>
                 </button>
                 <button id="btn-image-view" class="px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white transition flex items-center gap-1.5">
                     <i class="fa-regular fa-image"></i>
-                    <span class="hidden md:inline">Immagine Originale</span>
+                    <span>Immagine Originale</span>
                 </button>
             </div>
 
-            <div class="h-6 w-px bg-slate-800 mx-1"></div>
+            <div class="h-6 w-px bg-slate-800 mx-1 hidden lg:block"></div>
 
             <!-- Tree Action Controls -->
             <div id="tree-tools" class="flex items-center gap-1.5">
                 <button id="btn-expand-all" class="p-2 text-slate-300 hover:text-emerald-400 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-lg text-xs font-medium transition flex items-center gap-1" title="Espandi Tutto">
                     <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
-                    <span class="hidden lg:inline">Espandi</span>
+                    <span class="hidden xl:inline">Espandi</span>
                 </button>
                 <button id="btn-collapse-all" class="p-2 text-slate-300 hover:text-emerald-400 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-lg text-xs font-medium transition flex items-center gap-1" title="Riduci Tutto">
                     <i class="fa-solid fa-down-left-and-up-right-to-center"></i>
-                    <span class="hidden lg:inline">Riduci</span>
+                    <span class="hidden xl:inline">Riduci</span>
                 </button>
                 <button id="btn-reset-view" class="p-2 text-slate-300 hover:text-emerald-400 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-lg text-xs font-medium transition" title="Ricentra Vista">
                     <i class="fa-solid fa-crosshairs"></i>
@@ -414,6 +435,8 @@
                 if (parentWrapper.classList.contains('collapsed')) return;
 
                 const parentCard = document.getElementById(`node-${parentId}`).querySelector('.tree-node-content');
+                if(!parentCard) return;
+                
                 const parentRect = parentCard.getBoundingClientRect();
 
                 // Compute relative coordinates
@@ -480,7 +503,7 @@
         // Mouse Drag / Pan Logic
         viewport.addEventListener('mousedown', (e) => {
             if (activeView === 'tree') {
-                if (e.target.closest('.tree-node-content') || e.target.closest('button')) return;
+                if (e.target.closest('.tree-node-content') || e.target.closest('button') || e.target.closest('a')) return;
                 isDragging = true;
                 startX = e.clientX - treePanX;
                 startY = e.clientY - treePanY;
@@ -533,35 +556,37 @@
         }, { passive: false });
 
         // Switch View Mode Logic
-        btnTreeView.addEventListener('click', () => {
-            activeView = 'tree';
-            btnTreeView.className = "px-3 py-1.5 rounded-lg font-medium bg-emerald-600 text-white transition flex items-center gap-1.5 shadow-sm";
-            btnImageView.className = "px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white transition flex items-center gap-1.5";
-            
-            imageViewerContainer.classList.add('hidden');
-            treeTools.classList.remove('hidden');
-            treeZoomControls.classList.remove('hidden');
-            requestAnimationFrame(drawConnections);
-        });
+        if(btnTreeView && btnImageView) {
+            btnTreeView.addEventListener('click', () => {
+                activeView = 'tree';
+                btnTreeView.className = "px-3 py-1.5 rounded-lg font-medium bg-emerald-600 text-white transition flex items-center gap-1.5 shadow-sm";
+                btnImageView.className = "px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white transition flex items-center gap-1.5";
+                
+                imageViewerContainer.classList.add('hidden');
+                treeTools.classList.remove('hidden');
+                treeZoomControls.classList.remove('hidden');
+                requestAnimationFrame(drawConnections);
+            });
 
-        btnImageView.addEventListener('click', () => {
-            activeView = 'image';
-            btnImageView.className = "px-3 py-1.5 rounded-lg font-medium bg-emerald-600 text-white transition flex items-center gap-1.5 shadow-sm";
-            btnTreeView.className = "px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white transition flex items-center gap-1.5";
+            btnImageView.addEventListener('click', () => {
+                activeView = 'image';
+                btnImageView.className = "px-3 py-1.5 rounded-lg font-medium bg-emerald-600 text-white transition flex items-center gap-1.5 shadow-sm";
+                btnTreeView.className = "px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white transition flex items-center gap-1.5";
 
-            imageViewerContainer.classList.remove('hidden');
-            treeTools.classList.add('hidden');
-            treeZoomControls.classList.add('hidden');
-            resetImageTransform();
-        });
+                imageViewerContainer.classList.remove('hidden');
+                treeTools.classList.add('hidden');
+                treeZoomControls.classList.add('hidden');
+                resetImageTransform();
+            });
+        }
 
         // Image Zoom Logic
         const imgWrapper = document.getElementById('image-transform-wrapper');
         const imgZoomLevel = document.getElementById('img-zoom-level');
 
         function updateImageTransform() {
-            imgWrapper.style.transform = `translate(${imgPanX}px, ${imgPanY}px) scale(${imgScale})`;
-            imgZoomLevel.textContent = `${Math.round(imgScale * 100)}%`;
+            if(imgWrapper) imgWrapper.style.transform = `translate(${imgPanX}px, ${imgPanY}px) scale(${imgScale})`;
+            if(imgZoomLevel) imgZoomLevel.textContent = `${Math.round(imgScale * 100)}%`;
         }
 
         function resetImageTransform() {
@@ -571,17 +596,19 @@
             updateImageTransform();
         }
 
-        document.getElementById('img-zoom-in').addEventListener('click', () => {
-            imgScale = Math.min(imgScale + 0.25, 4);
-            updateImageTransform();
-        });
+        if(document.getElementById('img-zoom-in')) {
+            document.getElementById('img-zoom-in').addEventListener('click', () => {
+                imgScale = Math.min(imgScale + 0.25, 4);
+                updateImageTransform();
+            });
 
-        document.getElementById('img-zoom-out').addEventListener('click', () => {
-            imgScale = Math.max(imgScale - 0.25, 0.4);
-            updateImageTransform();
-        });
+            document.getElementById('img-zoom-out').addEventListener('click', () => {
+                imgScale = Math.max(imgScale - 0.25, 0.4);
+                updateImageTransform();
+            });
 
-        document.getElementById('img-zoom-reset').addEventListener('click', resetImageTransform);
+            document.getElementById('img-zoom-reset').addEventListener('click', resetImageTransform);
+        }
 
         // Initialize Tree on Load
         window.addEventListener('DOMContentLoaded', () => {
