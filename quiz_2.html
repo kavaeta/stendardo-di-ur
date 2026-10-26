@@ -303,4 +303,22 @@
                 }
             }
 
-            // Rivela il pannello con le correzioni per la
+            // Rivela il pannello con le correzioni per la domanda corrente
+            const feedbackContainer = document.getElementById(`feedback-${index}`);
+            if(feedbackContainer) feedbackContainer.style.display = "block";
+        });
+
+        // Mostra il blocco riepilogativo finale
+        const resultsSummary = document.getElementById('results-summary');
+        const scoreText = document.getElementById('score-text');
+        
+        scoreText.textContent = score;
+        resultsSummary.style.display = "block";
+        
+        // Scroll animato verso il riepilogo
+        resultsSummary.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+</script>
+
+</body>
+</html>
