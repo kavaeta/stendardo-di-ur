@@ -3,78 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artefatto NotebookLM - Quiz Stendardo di Ur</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-    <!-- Font Awesome per le icone -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <title>Lo Stendardo di Ur - Quiz Completo (16 Domande)</title>
     <style>
         :root {
-            --primary: #1a73e8;
-            --primary-hover: #1557b0;
-            --bg-color: #f8f9fa;
-            --card-bg: #ffffff;
-            --text-main: #202124;
-            --text-secondary: #5f6368;
-            --correct-bg: #e6f4ea;
-            --correct-border: #34a853;
-            --wrong-bg: #fce8e6;
-            --wrong-border: #ea4335;
-            --border-light: #dadce0;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+            --primary: #1e3a8a;
+            --secondary: #991b1b;
+            --bg-color: #fdfbf7;
+            --text-main: #1f2937;
+            --correct-bg: #dcfce7;
+            --correct-border: #16a34a;
+            --wrong-bg: #fee2e2;
+            --wrong-border: #dc2626;
         }
 
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            line-height: 1.6;
+            margin: 0;
             padding: 2rem 1rem;
+            line-height: 1.6;
         }
 
         .container {
             max-width: 800px;
             margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            border-top: 6px solid var(--primary);
         }
 
-        .header {
+        h1 {
             text-align: center;
-            margin-bottom: 3rem;
-            font-family: 'Google Sans', sans-serif;
-        }
-
-        .header h1 {
-            color: var(--text-main);
-            font-size: 2.5rem;
+            color: var(--primary);
             margin-bottom: 0.5rem;
         }
 
-        .header p {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
+        p.subtitle {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 2rem;
+            font-style: italic;
         }
 
         .question-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-light);
-            border-radius: 12px;
-            padding: 2rem;
             margin-bottom: 2rem;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background-color: #f9fafb;
         }
 
-        .question-card h3 {
-            font-family: 'Google Sans', sans-serif;
-            font-size: 1.25rem;
-            margin-bottom: 1.5rem;
-            color: var(--text-main);
+        .question-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            color: var(--primary);
         }
 
         .options-group {
@@ -85,54 +71,24 @@
 
         .option-label {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             padding: 1rem;
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
             cursor: pointer;
-            transition: background-color 0.2s, border-color 0.2s;
-            font-size: 1rem;
+            background-color: white;
+            transition: background-color 0.2s;
         }
 
         .option-label:hover {
-            background-color: #f1f3f4;
+            background-color: #f3f4f6;
         }
 
         .option-label input[type="radio"] {
+            margin-top: 0.25rem;
             margin-right: 1rem;
             transform: scale(1.2);
             cursor: pointer;
-        }
-
-        /* Stili per il feedback */
-        .option-label.correct {
-            background-color: var(--correct-bg);
-            border-color: var(--correct-border);
-            font-weight: 500;
-        }
-
-        .option-label.wrong {
-            background-color: var(--wrong-bg);
-            border-color: var(--wrong-border);
-        }
-
-        .feedback-box {
-            display: none;
-            margin-top: 1.5rem;
-            padding: 1.25rem;
-            border-radius: 8px;
-            background-color: #f8f9fa;
-            border-left: 4px solid var(--primary);
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        .feedback-box strong {
-            color: var(--text-main);
-            display: block;
-            margin-bottom: 0.5rem;
-            font-family: 'Google Sans', sans-serif;
         }
 
         .btn-submit {
@@ -143,272 +99,208 @@
             border: none;
             padding: 1rem;
             font-size: 1.1rem;
-            font-family: 'Google Sans', sans-serif;
-            font-weight: 500;
+            font-weight: bold;
             border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s;
             margin-top: 2rem;
-            box-shadow: 0 4px 6px rgba(26, 115, 232, 0.2);
         }
 
         .btn-submit:hover {
-            background-color: var(--primary-hover);
+            background-color: #172554;
         }
-
+        
         .btn-submit:disabled {
-            background-color: #9aa0a6;
+            background-color: #9ca3af;
             cursor: not-allowed;
-            box-shadow: none;
         }
 
+        /* Styles per il feedback (correzioni) */
+        .feedback-container {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 6px;
+            background-color: white;
+            border-left: 4px solid #9ca3af;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .feedback-container h4 {
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+            font-size: 1.05rem;
+            color: var(--primary);
+        }
+        
+        .analysis-item {
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+        }
+        
+        .analysis-item.correct-analysis {
+            background-color: var(--correct-bg);
+            border: 1px solid var(--correct-border);
+        }
+        
+        .analysis-item.wrong-analysis {
+            background-color: var(--wrong-bg);
+            border: 1px solid var(--wrong-border);
+        }
+        
+        .analysis-item strong {
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Stili finali per le opzioni dopo la correzione */
+        .option-label.is-correct {
+            background-color: var(--correct-bg);
+            border-color: var(--correct-border);
+            font-weight: 600;
+        }
+
+        .option-label.is-wrong {
+            background-color: var(--wrong-bg);
+            border-color: var(--wrong-border);
+        }
+        
         #results-summary {
             display: none;
-            background-color: var(--card-bg);
-            border: 2px solid var(--primary);
-            border-radius: 12px;
-            padding: 2rem;
             text-align: center;
-            margin-top: 3rem;
-            box-shadow: 0 8px 24px rgba(26, 115, 232, 0.15);
+            margin-top: 2rem;
+            padding: 2rem;
+            background-color: #eff6ff;
+            border: 2px solid #bfdbfe;
+            border-radius: 12px;
         }
-
-        .score-circle {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background-color: var(--primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        
+        .score {
             font-size: 2.5rem;
-            font-family: 'Google Sans', sans-serif;
-            font-weight: 700;
-            margin: 0 auto 1.5rem auto;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 1rem;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <h1>Lo Stendardo di Ur</h1>
-        <p>Verifica le tue conoscenze e leggi le revisioni per imparare dai tuoi errori.</p>
-    </div>
-
+    <h1>Lo Stendardo di Ur</h1>
+    <p class="subtitle">Quiz Didattico Completo (16 Domande) con Correzioni e Analisi delle Opzioni</p>
+    
     <form id="quiz-form">
         <div id="quiz-content"></div>
-        <button type="button" id="submit-btn" class="btn-submit" onclick="checkAnswers()">Verifica Risposte</button>
+        <button type="button" id="submit-btn" class="btn-submit" onclick="checkAnswers()">Verifica Risposte e Mostra Correzioni</button>
     </form>
 
     <div id="results-summary">
-        <div class="score-circle">
-            <span id="score-text">0/16</span>
-        </div>
-        <h2 style="margin-bottom: 1rem; font-family: 'Google Sans', sans-serif;">Risultato Finale</h2>
-        <p id="score-feedback" style="font-size: 1.1rem; color: var(--text-secondary);"></p>
-        <p style="margin-top: 1rem; font-weight: 500;">Scorri in alto per leggere le revisioni alle tue risposte.</p>
+        <h2>Risultato Finale</h2>
+        <div class="score"><span id="score-text">0</span> / 16</div>
+        <p>Esamina i riquadri apparsi sotto ogni domanda per leggere le spiegazioni dettagliate di ogni singola opzione fornita, in base alla chiave di correzione integrale.</p>
     </div>
 </div>
 
 <script>
+    // Dati del quiz generati a partire dal file
     const quizData = [
-        {
-            q: "1. In quale necropoli è stato ritrovato lo Stendardo di Ur?",
-            options: ["Necropoli reale di Tebe", "Necropoli reale di Ur", "Valle dei Re", "Necropoli di Giza"],
-            a: 1,
-            explanation: "Corretto! Lo Stendardo di Ur è un reperto archeologico sumero rinvenuto proprio nella Necropoli reale di Ur. Le altre opzioni (Tebe, Valle dei Re, Giza) sono tutte famose necropoli legate all'Antico Egitto, non alla Mesopotamia."
-        },
-        {
-            q: "2. A quale periodo risale storicamente l'opera?",
-            options: ["1000 a.C.", "1500 a.C.", "2500 a.C. circa", "3500 a.C."],
-            a: 2,
-            explanation: "La datazione corretta è il 2500 a.C. circa, nel cuore dello sviluppo della civiltà sumerica."
-        },
-        {
-            q: "3. Da quanti pannelli principali di legno è costituito l'oggetto?",
-            options: ["Due", "Tre", "Quattro", "Sei"],
-            a: 2,
-            explanation: "È costituito da quattro pannelli di legno, composti a cassetta (due principali rettangolari e due laterali trapezoidali)."
-        },
-        {
-            q: "4. Qual era la funzione originaria e accertata dello Stendardo?",
-            options: ["Cassa di risonanza per arpa", "Stendardo da processione", "Scatola per gioielli regali", "Non è ancora conosciuta con certezza"],
-            a: 3,
-            explanation: "Nonostante il nome 'Stendardo', ancora oggi non conosciamo con certezza la sua funzione. Potrebbe essere stato issato in processione, oppure esposto in un palazzo, o addirittura fungere da cassa di risonanza per uno strumento."
-        },
-        {
-            q: "5. Quali di questi materiali preziosi NON è stato usato per l'intarsio?",
-            options: ["Lapislazzuli", "Oro zecchino", "Conchiglie marine", "Pietra calcarea rossastra"],
-            a: 1,
-            explanation: "L'oro zecchino non è presente. L'opera è decorata a intarsio utilizzando esclusivamente lapislazzuli (blu), conchiglie marine indiane (bianco/beige) e pietra calcarea (rossastra)."
-        },
-        {
-            q: "6. Con quale materiale sono legati tra loro gli intarsi?",
-            options: ["Argilla cruda", "Pasta nera di bitume", "Stucco di gesso", "Resina di pino"],
-            a: 1,
-            explanation: "I sumeri usavano la pasta nera di bitume come collante e legante per tenere fermi i frammenti di pietra e conchiglia sulla base di legno."
-        },
-        {
-            q: "7. In quanti registri (fasce) sono divisi i due pannelli principali?",
-            options: ["Due", "Tre", "Quattro", "Cinque"],
-            a: 1,
-            explanation: "I pannelli principali sono divisi ciascuno in tre registri (fasce orizzontali) sovrapposti."
-        },
-        {
-            q: "8. Quali sono i due temi contrapposti raffigurati sui pannelli principali?",
-            options: ["Guerra e Pace", "Vita e Morte", "Terra e Cielo", "Caccia e Agricoltura"],
-            a: 0,
-            explanation: "I due lati principali del reperto sono noti proprio come 'Pannello della guerra' (che mostra l'esercito e i carri) e 'Pannello della pace' (che mostra un banchetto)."
-        },
-        {
-            q: "9. In che direzione vanno 'lette' le scene dei pannelli?",
-            options: ["Da destra a sinistra, dall'alto al basso", "Da sinistra a destra, dal basso verso l'alto", "A spirale dal centro verso l'esterno", "Dall'alto verso il basso"],
-            a: 1,
-            explanation: "La narrazione sumera in quest'opera procede da sinistra a destra e parte dal basso (il registro inferiore) verso l'alto, culminando con la figura del re nel registro superiore."
-        },
-        {
-            q: "10. Cosa è raffigurato nella fascia più bassa del Pannello della guerra?",
-            options: ["Soldati in marcia", "Schiavi che portano armi", "Quattro carri militari trainati da asini", "Il re che punisce i prigionieri"],
-            a: 2,
-            explanation: "Nel registro inferiore della Guerra si osservano quattro potenti carri militari con ruote piene, trainati da asini che travolgono i nemici."
-        },
-        {
-            q: "11. Nel Pannello della guerra, come viene evidenziato il re rispetto agli altri?",
-            options: ["Indossa un mantello d'oro", "Raffigurato più alto in virtù del suo ruolo", "È l'unico a cavallo", "Ha un'aureola di lapislazzuli"],
-            a: 1,
-            explanation: "Il re (al centro del registro superiore) obbedisce alle regole della proporzione gerarchica: è raffigurato più alto di tutti gli altri per evidenziare il suo ruolo superiore."
-        },
-        {
-            q: "12. Cos'è il 'kaunakes' indossato dai personaggi nel Pannello della pace?",
-            options: ["Un elmetto di bronzo", "Una sottana di vello di pecora", "Una collana di conchiglie", "Un mantello di pelle bovina"],
-            a: 1,
-            explanation: "Il kaunakes è il tipico abito sumero: una gonna/sottana realizzata in vello di pecora, con i classici bioccoli di lana."
-        },
-        {
-            q: "13. Chi allieta gli ospiti nel registro superiore del Pannello della pace?",
-            options: ["Dei danzatori", "Un arpista e una cantante", "Dei giocolieri", "Un flautista"],
-            a: 1,
-            explanation: "Sulla destra del registro superiore, all'estremità della scena del banchetto, si notano un arpista (con un'arpa simile a quelle trovate a Ur) e una cantante."
-        },
-        {
-            q: "14. Secondo il testo, lo stile della pittura sumera in quest'opera:",
-            options: ["Ricerca la prospettiva perfetta", "Evita ogni forma di illusionismo e profondità", "Usa il chiaroscuro per dare volume", "È identico in tutto e per tutto a quello egizio"],
-            a: 1,
-            explanation: "Gli artisti sumeri evitano consapevolmente la ricerca della profondità e dell'illusionismo tridimensionale, preferendo scene bidimensionali ma con alcuni dettagli naturalistici (come i malleoli delle caviglie)."
-        },
-        {
-            q: "15. Come viene rappresentato l'occhio delle figure umane nello Stendardo?",
-            options: ["Di profilo", "Chiuso", "Sempre in posizione frontale", "Stilizzato a forma di mandorla cava"],
-            a: 2,
-            explanation: "Come nell'arte egizia, il corpo è rappresentato per aspetti: le gambe e la testa sono di profilo, mentre il torso e l'occhio sono sempre rappresentati frontalmente."
-        },
-        {
-            q: "16. Rispetto alla pittura egizia (longilinea), come appaiono le figure sumere?",
-            options: ["Ancora più allungate", "Molto realistiche", "Brevilinee e tarchiate", "Quasi astratte"],
-            a: 2,
-            explanation: "Nell'arte sumerica conta la monumentalità dell'insieme. Per questo le figure appaiono brevilinee (tarchiate), con il tronco che prevale nettamente sugli arti, a differenza dell'elegante slancio delle figure egizie."
-        }
+        {"q": "Cosa viene raffigurato nella fascia più bassa (registro inferiore) del Pannello della guerra nello Stendardo di Ur?", "options": [{"text": "I soldati in marcia protetti da elmetti a cuffia e armati di lance orizzontali.", "correct": false, "exp": "Errata. Descrive la fascia centrale (secondo registro) del Pannello della guerra, dove sfila la fanteria sumera."}, {"text": "Quattro carri militari trainati da asini che travolgono i nemici sconfitti.", "correct": true, "exp": "Corretta. Nel registro inferiore del Pannello della guerra compaiono quattro carri da guerra con ruote piene e asini che travolgono i corpi dei nemici vinti."}, {"text": "Il sovrano al centro che riceve i prigionieri di guerra nudi.", "correct": false, "exp": "Errata. Descrive il registro superiore (terzo registro) del Pannello della guerra, con il re di dimensioni maggiori."}, {"text": "Una fila di servi che trasportano i tributi in vista del banchetto di celebrazione.", "correct": false, "exp": "Errata. Questa scena appartiene al registro inferiore del Pannello della pace, dove si portano i tributi."}]},
+        {"q": "Da dove provengono le conchiglie marine impiegate nelle intarsiature e negli intagli dello Stendardo di Ur?", "options": [{"text": "Dal Mar Rosso.", "correct": false, "exp": "Errata. Nel testo non è menzionato il Mar Rosso; la provenienza documentata nell'articolo è un'altra."}, {"text": "Dal Mar Mediterraneo.", "correct": false, "exp": "Errata. Il Mar Mediterraneo non è citato per le conchiglie dello Stendardo."}, {"text": "Dalle coste indiane.", "correct": true, "exp": "Corretta. La fonte specifica espressamente che le conchiglie marine intarsiate provengono dalle coste indiane, evidenziando le rotte commerciali sumere."}, {"text": "Dal Golfo Persico.", "correct": false, "exp": "Errata. Benché Ur fosse vicina al Golfo Persico, le conchiglie usate per gli intarsi dell'opera provenivano dalle coste indiane."}]},
+        {"q": "I pannelli laterali dello Stendardo di Ur presentano una forma trapezoidale. Quale soggetto mitologico viene raffigurato su di essi?", "options": [{"text": "Un leone nell'atto di azzannare una gazzella.", "correct": false, "exp": "Errata. Non è la figura raffigurata sui pannelli laterali dello Stendardo."}, {"text": "Un'aquila dalla testa di leone.", "correct": true, "exp": "Corretta. L'articolo indica che i pannelli laterali trapezoidali riportano piccole immagini mitologiche, tra cui un'aquila dalla testa di leone (Anzû/Imdugud)."}, {"text": "Un toro alato con testa umana (Lamassu).", "correct": false, "exp": "Errata. Il Lamassu è un elemento scultoreo dell'arte assira, molto più tardo."}, {"text": "Un grifone che custodisce un albero della vita.", "correct": false, "exp": "Errata. Il grifone non è citato nel testo tra i soggetti dei pannelli laterali dello Stendardo."}]},
+        {"q": "Quale sostanza viene utilizzata dagli artigiani sumeri come collante per fissare le tessere incrostate al supporto di legno?", "options": [{"text": "Resina di pino selvatico.", "correct": false, "exp": "Errata. La resina di pino non era il legante impiegato per questo intarsio."}, {"text": "Pasta nera di bitume.", "correct": true, "exp": "Corretta. Tutti i materiali (conchiglie, madreperla, calcare rosso e lapislazzuli) sono legati fra loro mediante pasta nera di bitume."}, {"text": "Cera d'api naturale.", "correct": false, "exp": "Errata. La cera d'api veniva usata in altre tecniche (es. fusione a cera persa), non come collante dello Stendardo."}, {"text": "Stucco di gesso e calce.", "correct": false, "exp": "Errata. Lo stucco di gesso non è la sostanza adesiva indicata nelle fonti archeologiche sumere."}]},
+        {"q": "In che modo deve essere 'letta' la narrazione visiva nei tre registri dei pannelli principali dello Stendardo?", "options": [{"text": "Dall'alto verso il basso e da destra a sinistra.", "correct": false, "exp": "Errata. È la direzione opposta rispetto al principio narrativo sumero."}, {"text": "Da sinistra a destra e dal basso verso l'alto.", "correct": true, "exp": "Corretta. I due pannelli principali si leggono da sinistra a destra e dal basso verso l'alto, iniziando dall'azione e culminando con il re."}, {"text": "In senso orario partendo dal centro del pannello.", "correct": false, "exp": "Errata. La narrazione non ha una struttura circolare o oraria."}, {"text": "Da destra a sinistra e dal centro verso i margini.", "correct": false, "exp": "Errata. Il senso di lettura non procede dal centro verso i margini."}]},
+        {"q": "Nel registro superiore del Pannello della guerra, come viene resa riconoscibile la figura del sovrano rispetto al suo seguito?", "options": [{"text": "Indossa una corona d'oro tempestata di lapislazzuli.", "correct": false, "exp": "Errata. Nel testo non si fa menzione di una corona d'oro con lapislazzuli."}, {"text": "È raffigurato più alto degli altri personaggi per indicare la sua superiorità gerarchica.", "correct": true, "exp": "Corretta. In virtù della prospettiva gerarchica, il re è raffigurato più alto del suo seguito, sfondando quasi il bordo del registro."}, {"text": "È l'unico personaggio mostrato con il corpo interamente di fronte.", "correct": false, "exp": "Errata. Anche il re rispetta le convenzioni sumere con testa e gambe di profilo e busto/occhio frontali."}, {"text": "Siede su un trono rialzato al centro del campo di battaglia.", "correct": false, "exp": "Errata. Nel Pannello della guerra il re è in piedi ad attendere i prigionieri; siede su un sedile nel Pannello della pace."}]},
+        {"q": "Quale abbigliamento caratterizza i soldati sumeri raffigurati nel secondo registro (centrale) del Pannello della guerra?", "options": [{"text": "Cotte di maglia in bronzo e scudi rettangolari.", "correct": false, "exp": "Errata. Le cotte di maglia in bronzo appartengono ad epoche successive."}, {"text": "Elmetti a cuffia e mantelli di cuoio decorati con borchie metalliche.", "correct": true, "exp": "Corretta. La fonte descrive i soldati in marcia vestiti con elmetti a cuffia e mantelli di cuoio decorati con borchie metalliche, armati di lance."}, {"text": "Tuniche di lino bianco e corazze di piastre di ferro.", "correct": false, "exp": "Errata. Il lino e il ferro non sono i materiali descritti per l'equipaggiamento della fanteria sumera nello Stendardo."}, {"text": "Mantelli di lana di pecora (kaunakes) e copricapi piumati.", "correct": false, "exp": "Errata. Il kaunakes è la sottana indossata nel banchetto della pace, non il mantello della fanteria in guerra."}]},
+        {"q": "Cosa indossano il sovrano, i cortigiani e gli invitati seduti nel registro superiore del Pannello della pace?", "options": [{"text": "Mantelli di cuoio guarniti con borchie metalliche.", "correct": false, "exp": "Errata. I mantelli di cuoio borchiato sono usati dai soldati nel Pannello della guerra."}, {"text": "Il kaunakes, la caratteristica sottana di vello di pecora.", "correct": true, "exp": "Corretta. I commensali e il re indossano il kaunakes (sottana di vello di pecora), lasciando il torace nudo e radendosi testa e viso."}, {"text": "Longhe toghe di lino plissettato finemente ricamate.", "correct": false, "exp": "Errata. Le toghe di lino non sono l'abbigliamento tipico sumero raffigurato."}, {"text": "Armature da cerimonia in lamina d'oro e conchiglia.", "correct": false, "exp": "Errata. Non vengono indossate armature da cerimonia durante la scena del banchetto."}]},
+        {"q": "Cosa viene rappresentato nel registro inferiore (prima fascia) del Pannello della pace?", "options": [{"text": "Schiavi che conducono gli animali al macello per il banchetto.", "correct": false, "exp": "Errata. Questa raffigurazione si trova nella fascia centrale (secondo registro) della Pace."}, {"text": "Una fila di servi o di stranieri vinti che portano i tributi al re.", "correct": true, "exp": "Corretta. La fascia inferiore del Pannello della pace mostra una fila di servi o stranieri vinti che trasportano i tributi."}, {"text": "Quattro carri militari trainati da asini in parata.", "correct": false, "exp": "Errata. I carri militari si trovano nel registro inferiore del Pannello della guerra."}, {"text": "Musicisti e cantanti che allietano il sovrano con un'arpa.", "correct": false, "exp": "Errata. L'arpista e la cantante si trovano nel registro superiore del Pannello della pace."}]},
+        {"q": "Cosa raffigura la fascia centrale (secondo registro) del Pannello della pace?", "options": [{"text": "Soldati in marcia che spingono prigionieri nudi.", "correct": false, "exp": "Errata. Questa è la scena del registro centrale del Pannello della guerra."}, {"text": "Schiavi che recano gli animali al macello per la preparazione del banchetto.", "correct": true, "exp": "Corretta. Nel registro centrale della Pace, gli schiavi portano bovini e ovini destinati al macello per il banchetto regio."}, {"text": "Il re seduto su un prezioso sedile con piedi a zampa d'animale.", "correct": false, "exp": "Errata. Il re e i cortigiani seduti appartengono al registro superiore."}, {"text": "Personaggi che innalzano calici brindando in onore del re.", "correct": false, "exp": "Errata. Il brindisi con i calici si svolge nel registro superiore durante il banchetto."}]},
+        {"q": "Nel registro superiore del Pannello della pace, quali figure si trovano sulla destra per allietare gli ospiti del banchetto?", "options": [{"text": "Un gruppo di ballerini mascherati e un flautista.", "correct": false, "exp": "Errata. Non sono presenti ballerini mascherati nel registro del banchetto."}, {"text": "Un arpista e una cantante.", "correct": true, "exp": "Corretta. La fonte indica chiaramente che sulla destra un arpista e una cantante allietano gli ospiti; l'arpa raffigurata è identica a quelle reali rinvenute a Ur."}, {"text": "Un poeta recitante e un suonatore di tamburo.", "correct": false, "exp": "Errata. Non sono raffigurati poeti o tamburi nella scena intarsiata."}, {"text": "Un giocoliere e due servitori che versano il vino.", "correct": false, "exp": "Errata. Non figurano giocolieri nell'iconografia dello Stendardo."}]},
+        {"q": "Rispetto alla pittura egizia, come appaiono le proporzioni del corpo umano nell'arte sumerica dello Stendardo?", "options": [{"text": "Molto slanciate, eleganti e caratterizzate da un ritmo raffinato.", "correct": false, "exp": "Errata. Questo stile slanciato ed elegante è tipico dell'arte egizia, contrapposta a quella sumera."}, {"text": "Brevilinee e tarchiate, con una netta prevalenza del tronco sugli arti.", "correct": true, "exp": "Corretta. Le figure sumere sono brevilinee e tarchiate (tronco prevalente sugli arti), per comunicare un'impressione di pesante compostezza e monumentalità d'insieme."}, {"text": "Perfettamente naturalistiche e rispettose delle proporzioni anatomiche classiche.", "correct": false, "exp": "Errata. L'artista evita l'illusionismo e la verosimiglianza anatomica perfetta."}, {"text": "Gigantesche e deformate senza alcuna regola rappresentativa.", "correct": false, "exp": "Errata. Le figure seguono canoni rigorosi e convenzioni ben precise, non sono deformate casualmente."}]},
+        {"q": "Quale particolare stilistico dimostra una 'ricerca di naturalismo' da parte dell'anonimo artista sumero?", "options": [{"text": "La sfumatura chiaroscurale dei volti e dei muscoli.", "correct": false, "exp": "Errata. L'arte sumera non utilizzava lo chiaroscuro sfumato."}, {"text": "La cura nel disegno dei malleoli delle caviglie e dei singoli bioccoli di lana del vestito.", "correct": true, "exp": "Corretta. L'articolo evidenzia che, pur rifiutando la profondità spaziale, l'artista mostra naturalismo nei malleoli delle caviglie e nei bioccoli di lana del kaunakes."}, {"text": "Lo scorcio prospettico delle ruote dei carri da guerra.", "correct": false, "exp": "Errata. Non c'è scorcio prospettico; le ruote e i carri sono visti lateralmente in modo bidimensionale."}, {"text": "La rappresentazione paesaggistica delle montagne di sfondo.", "correct": false, "exp": "Errata. Lo sfondo è totalmente privo di elementi paesaggistici (sfondo piatto in lapislazzuli)."}]},
+        {"q": "In quale contesto archeologico è stato rinvenuto lo Stendardo di Ur?", "options": [{"text": "Nel tempio del dio Marduk a Babilonia.", "correct": false, "exp": "Errata. Babilonia e il tempio di Marduk appartengono a un altro contesto geografico e storico."}, {"text": "In una tomba della Necropoli reale di Ur.", "correct": true, "exp": "Corretta. Lo Stendardo fu ritrovato in frammenti in una tomba del Cimitero/Necropoli reale di Ur (risalente al 2500 a.C. circa)."}, {"text": "Nel palazzo reale di Ninive in Assiria.", "correct": false, "exp": "Errata. Ninive è una città assira e non il luogo di ritrovamento dello Stendardo."}, {"text": "Nel santuario di Enlil a Nippur.", "correct": false, "exp": "Errata. L'opera proviene da Ur, non dal santuario di Nippur."}]},
+        {"q": "Quali pietre preziose formano rispettivamente lo sfondo blu intenso e i dettagli rossi degli intarsi dello Stendardo?", "options": [{"text": "Turchese per lo sfondo e diaspro rosso per i dettagli.", "correct": false, "exp": "Errata. Il turchese e il diaspro non sono i materiali principali citati per l'intarsio."}, {"text": "Lapislazzuli per lo sfondo e pietra calcarea rossastra per i dettagli.", "correct": true, "exp": "Corretta. Il fondo blu è realizzato con tessere di lapislazzuli, mentre le note cromatiche rosse sono date da pietra calcarea rossastra."}, {"text": "Pasta di vetro blu per lo sfondo e corallo per i dettagli.", "correct": false, "exp": "Errata. Non si tratta di pasta di vetro o corallo, ma di pietre naturali incastonate."}, {"text": "Azzurrite per lo sfondo e diaspro per i dettagli.", "correct": false, "exp": "Errata. L'azzurrite non è il minerale impiegato nello Stendardo di Ur."}]},
+        {"q": "Quale tra le seguenti ipotesi NON è mai stata proposta dagli studiosi riguardo alla funzione dello Stendardo di Ur?", "options": [{"text": "Cassa di risonanza di uno strumento musicale.", "correct": false, "exp": "Errata. La cassa di risonanza per uno strumento musicale è una delle ipotesi accreditate tra gli studiosi."}, {"text": "Elemento decorativo portato in processione issato su un bastone.", "correct": false, "exp": "Errata. L'ipotesi dello 'stendardo' da processione su bastone è quella che ha dato storicamente il nome all'oggetto."}, {"text": "Trono pieghevole utilizzato dal re durante le campagne militari.", "correct": true, "exp": "Corretta. L'opera è una cassetta di legno chiusa e intarsiata; non è mai stata ipotizzata come trono pieghevole."}, {"text": "Arredo esposto all'interno di un palazzo o di un tempio.", "correct": false, "exp": "Errata. La collocazione fissa come cassa decorativa in un palazzo o tempio è un'altra ipotesi citata nel testo."}]}
     ];
 
     const quizContent = document.getElementById('quiz-content');
 
-    // Genera l'HTML dinamicamente
+    // Generazione dinamica HTML per ciascuna delle 16 domande
     quizData.forEach((item, index) => {
         let optionsHTML = '';
+        let feedbackHTML = '';
+
         item.options.forEach((opt, optIndex) => {
+            const letter = String.fromCharCode(65 + optIndex); // A, B, C, D
+            
+            // HTML delle opzioni radio
             optionsHTML += `
                 <label class="option-label" id="label-q${index}-o${optIndex}">
                     <input type="radio" name="q${index}" value="${optIndex}">
-                    ${opt}
+                    <span><strong>${letter})</strong> ${opt.text}</span>
                 </label>
+            `;
+            
+            // HTML per le spiegazioni di ogni singola risposta
+            const correctness = opt.correct ? "CORRETTA" : "ERRATA";
+            const cssClass = opt.correct ? "correct-analysis" : "wrong-analysis";
+            
+            feedbackHTML += `
+                <div class="analysis-item ${cssClass}">
+                    <strong>Opzione ${letter} [${correctness}]:</strong>
+                    ${opt.exp}
+                </div>
             `;
         });
 
+        // Contenitore HTML completo della singola domanda
         const questionHTML = `
             <div class="question-card" id="card-${index}">
-                <h3>${item.q}</h3>
+                <div class="question-title">${index + 1}. ${item.q.replace(/\\n/g, ' ')}</div>
                 <div class="options-group">
                     ${optionsHTML}
                 </div>
-                <div class="feedback-box" id="feedback-${index}">
-                    <strong>Revisione:</strong>
-                    ${item.explanation}
+                <div class="feedback-container" id="feedback-${index}">
+                    <h4>Analisi Dettagliata delle Opzioni:</h4>
+                    ${feedbackHTML}
                 </div>
             </div>
         `;
         quizContent.innerHTML += questionHTML;
     });
 
+    // Logica di correzione e punteggio
     function checkAnswers() {
         const submitBtn = document.getElementById('submit-btn');
-        submitBtn.disabled = true; // Previeni doppi click
-        submitBtn.textContent = "Risultati calcolati";
+        submitBtn.disabled = true; 
+        submitBtn.textContent = "Risultati Calcolati e Correzioni Visualizzate";
 
         let score = 0;
 
         quizData.forEach((item, index) => {
             const selectedInput = document.querySelector(`input[name="q${index}"]:checked`);
-            const feedbackBox = document.getElementById(`feedback-${index}`);
             
-            // Disabilita tutti i radio button
+            // Disabilita tutte le opzioni per evitare modifiche a posteriori
             const allRadios = document.querySelectorAll(`input[name="q${index}"]`);
             allRadios.forEach(radio => radio.disabled = true);
 
-            // Segna in verde la risposta corretta (sempre e comunque)
-            const correctLabel = document.getElementById(`label-q${index}-o${item.a}`);
-            correctLabel.classList.add('correct');
-            
-            // Aggiungi un'icona alla risposta corretta
-            correctLabel.innerHTML += ' <i class="fa-solid fa-check" style="margin-left: auto; color: #1e8e3e;"></i>';
+            // Trova l'indice corretto
+            const correctIndex = item.options.findIndex(o => o.correct);
+
+            // Segna sempre la risposta corretta in verde
+            const correctLabel = document.getElementById(`label-q${index}-o${correctIndex}`);
+            if(correctLabel) correctLabel.classList.add('is-correct');
 
             if (selectedInput) {
                 const selectedVal = parseInt(selectedInput.value);
-                if (selectedVal === item.a) {
+                if (selectedVal === correctIndex) {
                     score++;
                 } else {
-                    // Se l'utente ha sbagliato, colora di rosso la sua scelta
+                    // Segna in rosso la scelta sbagliata dell'utente
                     const wrongLabel = document.getElementById(`label-q${index}-o${selectedVal}`);
-                    wrongLabel.classList.add('wrong');
-                    wrongLabel.innerHTML += ' <i class="fa-solid fa-xmark" style="margin-left: auto; color: #d93025;"></i>';
+                    if(wrongLabel) wrongLabel.classList.add('is-wrong');
                 }
-            } else {
-                // Se non ha risposto
-                feedbackBox.innerHTML = `<strong>Nessuna risposta data.</strong> ${item.explanation}`;
             }
 
-            // Mostra il box con la spiegazione
-            feedbackBox.style.display = "block";
-        });
-
-        // Mostra il pannello del punteggio finale
-        const resultsSummary = document.getElementById('results-summary');
-        const scoreText = document.getElementById('score-text');
-        const scoreFeedback = document.getElementById('score-feedback');
-
-        scoreText.textContent = `${score}/${quizData.length}`;
-        resultsSummary.style.display = "block";
-
-        if(score === quizData.length) {
-            scoreFeedback.innerHTML = "Eccezionale! Padroneggi l'argomento alla perfezione. Hai lo stesso livello di un artefatto NotebookLM!";
-        } else if (score >= 11) {
-            scoreFeedback.innerHTML = "Ottimo lavoro! Ti ricordi molto bene i dettagli storici e stilistici dello Stendardo.";
-        } else if (score >= 6) {
-            scoreFeedback.innerHTML = "Hai una buona conoscenza di base, ma ci sono vari dettagli da ripassare leggendo le revisioni.";
-        } else {
-            scoreFeedback.innerHTML = "Nessun problema, l'importante è imparare! Leggi attentamente le spiegazioni fornite qui sopra.";
-        }
-
-        // Scrolla fluido in fondo ai risultati
-        resultsSummary.scrollIntoView({ behavior: 'smooth' });
-    }
-</script>
-
-</body>
-</html>
+            // Rivela il pannello con le correzioni per la
