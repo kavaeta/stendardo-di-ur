@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="it" class="h-full bg-slate-950 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mappa Mentale - Lo Stendardo di Ur</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome per Icone -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        /* SVG Connections Overlay */
+        #svg-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        /* Node Styling */
+        .tree-node {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 20;
+        }
+
+        .tree-node-content {
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+        }
+
+        .tree-node-content:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -2px rgba(16, 185, 129, 0.25);
+        }
+
+        /* Transition for collapsible children */
+        .node-children {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .collapsed > .node-children {
+            display: none !important;
+        }
+
+        /* Canvas Grid Pattern */
+        .bg-grid-pattern {
+            background-size: 32px 32px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col bg-slate-950 select-none overflow-hidden">
+
+    <!-- Header / Navbar -->
+    <header class="h-16 border-b border-slate-800 bg-slate-900/80 backdrop-blur-md px-4 md:px-6 flex items-center justify-between z-30 relative shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="p-2 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-emerald-400">
+                <i class="fa-solid fa-sitemap text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-lg md:text-xl font-bold bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
+                    Lo Stendardo di Ur
+                </h1>
+                <p class="text-xs text-slate-400 hidden sm:block">Mappa Mentale Interattiva & Digitale</p>
+            </div>
+        </div>
+
+        <!-- Controls Toolbar -->
+        <div class="flex items-center gap-2">
+            <!-- View Mode Switcher -->
+            <div class="bg-slate-800/80 p-1 rounded-xl border border-slate-700/60 flex text-xs">
+                <button id="btn-tree-view" class="px-3 py-1.5 rounded-lg font-medium bg-emerald-600 text-white transition flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-diagram-project"></i>
+                    <span class="hidden md:inline">Mappa Interattiva</span>
+                </button>
+                <button id="btn-image-view" class="px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white transition flex items-center gap-1.5">
+                    <i class="fa-regular fa-image"></i>
+                    <span class="hidden md:inline">Immagine Originale</span>
+                </button>
+            </div>
+
+            <div class="h-6 w-px bg-slate-800 mx-1"></div>
+
+            <!-- Tree Action Controls -->
+            <div id="tree-tools" class="flex items-center gap-1.5">
+                <button id="btn-expand-all" class="p-2 text-slate-300 hover:text-emerald-400 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-lg text-xs font-medium transition flex items-center gap-1" title="Espandi Tutto">
+                    <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+                    <span class="hidden lg:inline">Espandi</span>
+                </button>
+                <button id="btn-collapse-all" class="p-2 text-slate-300 hover:text-emerald-400 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-lg text-xs font-medium transition flex items-center gap-1" title="Riduci Tutto">
+                    <i class="fa-solid fa-down-left-and-up-right-to-center"></i>
+                    <span class="hidden lg:inline">Riduci</span>
+                </button>
+                <button id="btn-reset-view" class="p-2 text-slate-300 hover:text-emerald-400 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded-lg text-xs font-medium transition" title="Ricentra Vista">
+                    <i class="fa-solid fa-crosshairs"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Canvas Area -->
+    <main class="flex-1 relative overflow-hidden bg-grid-pattern cursor-grab active:cursor-grabbing" id="viewport">
+        
+        <!-- Interactive Tree Container -->
+        <div id="tree-container" class="absolute left-0 top-0 origin-0 transition-transform duration-75 ease-out p-12 min-w-max min-h-max">
+            <!-- SVG Overlay for Connecting Curves -->
+            <svg id="svg-canvas"></svg>
+
+            <!-- Tree Root HTML Structure -->
+            <div id="tree-root" class="relative z-20"></div>
+        </div>
+
+        <!-- Image Viewer Container (Hidden by default) -->
+        <div id="image-viewer-container" class="hidden absolute inset-0 z-30 bg-slate-950 flex items-center justify-center overflow-hidden">
+            <div id="image-transform-wrapper" class="origin-center transition-transform duration-75 ease-out cursor-grab active:cursor-grabbing">
+                <img id="mindmap-img" src="NotebookLM Mind Map (1).jpg" alt="Mappa Mentale Lo Stendardo di Ur" class="max-w-none shadow-2xl rounded-lg border border-slate-800" onerror="this.onerror=null; this.src='https://placehold.co/1200x900/111827/10b981?text=Carica+la+tua+immagine+NotebookLM+Mind+Map+(1).jpg';">
+            </div>
+            
+            <!-- Image Controls Overlay -->
+            <div class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 border border-slate-700/80 backdrop-blur-md rounded-full px-4 py-2 flex items-center gap-4 text-slate-300 shadow-xl z-40">
+                <button id="img-zoom-out" class="hover:text-emerald-400 p-1 transition" title="Zoom Out"><i class="fa-solid fa-minus"></i></button>
+                <span id="img-zoom-level" class="text-xs font-mono w-12 text-center text-emerald-400">100%</span>
+                <button id="img-zoom-in" class="hover:text-emerald-400 p-1 transition" title="Zoom In"><i class="fa-solid fa-plus"></i></button>
+                <div class="w-px h-4 bg-slate-700"></div>
+                <button id="img-zoom-reset" class="hover:text-emerald-400 p-1 transition text-xs font-medium" title="Ripristina">Reset</button>
+            </div>
+        </div>
+
+        <!-- Floating Zoom Controls for Tree -->
+        <div id="tree-zoom-controls" class="absolute bottom-6 right-6 bg-slate-900/90 border border-slate-800 backdrop-blur-md rounded-xl p-1.5 flex flex-col gap-1 shadow-xl z-30">
+            <button id="zoom-in" class="p-2 hover:bg-slate-800 rounded-lg text-slate-300 hover:text-emerald-400 transition" title="Zoom In">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+            <span id="tree-zoom-level" class="text-[10px] font-mono text-center text-slate-400 py-1 border-y border-slate-800">100%</span>
+            <button id="zoom-out" class="p-2 hover:bg-slate-800 rounded-lg text-slate-300 hover:text-emerald-400 transition" title="Zoom Out">
+                <i class="fa-solid fa-minus"></i>
+            </button>
+        </div>
+
+        <!-- Hint Overlay -->
+        <div class="absolute bottom-6 left-6 pointer-events-none hidden sm:flex items-center gap-2 text-xs text-slate-500 bg-slate-900/60 backdrop-blur px-3 py-1.5 rounded-lg border border-slate-800/60 z-20">
+            <i class="fa-solid fa-hand-pointer text-emerald-500/70"></i>
+            <span>Trascina per spostare &bull; Rotella mouse per zoomare</span>
+        </div>
+    </main>
+
+    <!-- JavaScript Data and Logic -->
+    <script>
+        // Mappa Mentale Data Structure based on "Lo Stendardo di Ur"
+        const mindMapData = {
+            id: 'root',
+            title: 'Lo Stendardo di Ur',
+            type: 'root',
+            children: [
+                {
+                    id: 'info-gen',
+                    title: 'Informazioni Generali',
+                    type: 'branch',
+                    children: [
+                        { id: 'ig-1', title: 'Civiltà: <span class="text-emerald-300 font-semibold">Sumera</span>', type: 'leaf' },
+                        { id: 'ig-2', title: 'Datazione: <span class="text-emerald-300 font-semibold">2500 a.C. circa</span>', type: 'leaf' },
+                        { id: 'ig-3', title: 'Luogo di ritrovamento: <span class="text-slate-200">Necropoli reale di Ur</span>', type: 'leaf' },
+                        { id: 'ig-4', title: 'Collocazione attuale: <span class="text-slate-200">Londra, British Museum</span>', type: 'leaf' },
+                        { id: 'ig-5', title: 'Struttura: <span class="text-slate-200">Quattro pannelli di legno a cassetta</span>', type: 'leaf' }
+                    ]
+                },
+                {
+                    id: 'mat-tech',
+                    title: 'Materiali e Tecnica',
+                    type: 'branch',
+                    children: [
+                        { id: 'mt-1', title: 'Tecnica decorativa: <span class="text-emerald-300 font-semibold">Intarsio</span>', type: 'leaf' },
+                        {
+                            id: 'mt-2',
+                            title: 'Materiali impiegati',
+                            type: 'subbranch',
+                            children: [
+                                { id: 'mat-1', title: 'Lapislazzuli', type: 'leaf' },
+                                { id: 'mat-2', title: 'Madreperla', type: 'leaf' },
+                                { id: 'mat-3', title: 'Conchiglie marine indiane', type: 'leaf' },
+                                { id: 'mat-4', title: 'Pietra calcarea rossastra', type: 'leaf' }
+                            ]
+                        },
+                        { id: 'mt-3', title: 'Legante: <span class="text-slate-200">Pasta nera di bitume</span>', type: 'leaf' }
+                    ]
+                },
+                {
+                    id: 'penn-guerra',
+                    title: 'Il Pannello della Guerra',
+                    type: 'branch',
+                    children: [
+                        { id: 'pg-1', title: 'Registro inferiore: <span class="text-slate-300">Carri militari trainati da asini</span>', type: 'leaf' },
+                        { id: 'pg-2', title: 'Registro centrale: <span class="text-slate-300">Soldati in marcia e prigionieri</span>', type: 'leaf' },
+                        { id: 'pg-3', title: 'Registro superiore: <span class="text-slate-300">Il re e il bottino</span>', type: 'leaf' }
+                    ]
+                },
+                {
+                    id: 'penn-pace',
+                    title: 'Il Pannello della Pace',
+                    type: 'branch',
+                    children: [
+                        { id: 'pp-1', title: 'Registro inferiore: <span class="text-slate-300">Servi con tributi</span>', type: 'leaf' },
+                        { id: 'pp-2', title: 'Registro centrale: <span class="text-slate-300">Animali per il banchetto</span>', type: 'leaf' },
+                        { id: 'pp-3', title: 'Registro superiore: <span class="text-slate-300">Il banchetto del re</span>', type: 'leaf' },
+                        { id: 'pp-4', title: 'Intrattenimento: <span class="text-slate-300">Arpista e cantante</span>', type: 'leaf' }
+                    ]
+                },
+                {
+                    id: 'stile-rappr',
+                    title: 'Stile e Rappresentazione',
+                    type: 'branch',
+                    children: [
+                        { id: 'sr-1', title: 'Assenza di illusionismo e profondità', type: 'leaf' },
+                        { id: 'sr-2', title: 'Naturalismo nei dettagli anatomici e nelle vesti', type: 'leaf' },
+                        {
+                            id: 'sr-3',
+                            title: 'Rappresentazione del corpo umano',
+                            type: 'subbranch',
+                            children: [
+                                { id: 'corpo-1', title: 'Testa e gambe di profilo', type: 'leaf' },
+                                { id: 'corpo-2', title: 'Occhio e torso frontali', type: 'leaf' }
+                            ]
+                        },
+                        { id: 'sr-4', title: 'Figure brevilinee e tarchiate', type: 'leaf' },
+                        { id: 'sr-5', title: 'Monumentalità dell\'insieme', type: 'leaf' }
+                    ]
+                }
+            ]
+        };
+
+        // DOM Elements
+        const viewport = document.getElementById('viewport');
+        const treeContainer = document.getElementById('tree-container');
+        const treeRoot = document.getElementById('tree-root');
+        const svgCanvas = document.getElementById('svg-canvas');
+        
+        const btnTreeView = document.getElementById('btn-tree-view');
+        const btnImageView = document.getElementById('btn-image-view');
+        const imageViewerContainer = document.getElementById('image-viewer-container');
+        const treeTools = document.getElementById('tree-tools');
+        const treeZoomControls = document.getElementById('tree-zoom-controls');
+
+        // State variables for Transform (Pan & Zoom)
+        let treeScale = 1;
+        let treePanX = 60;
+        let treePanY = 60;
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+
+        let activeView = 'tree'; // 'tree' or 'image'
+
+        // Image Viewer State
+        let imgScale = 1;
+        let imgPanX = 0;
+        let imgPanY = 0;
+        let isImgDragging = false;
+        let imgStartX = 0;
+        let imgStartY = 0;
+
+        // Render HTML Tree recursively
+        function renderNode(node) {
+            const hasChildren = node.children && node.children.length > 0;
+            const nodeWrapper = document.createElement('div');
+            nodeWrapper.className = `tree-node-wrapper flex items-center ${hasChildren ? 'has-children' : ''}`;
+            nodeWrapper.id = `wrapper-${node.id}`;
+
+            // Node card element
+            const nodeEl = document.createElement('div');
+            nodeEl.id = `node-${node.id}`;
+            nodeEl.className = `tree-node my-2 flex items-center`;
+
+            // Node visual style depending on depth
+            let styleClasses = "";
+            let toggleBtn = "";
+
+            if (hasChildren) {
+                toggleBtn = `
+                    <button onclick="toggleNode(event, '${node.id}')" class="toggle-btn ml-2 w-5 h-5 rounded-full bg-slate-800 hover:bg-emerald-500 hover:text-slate-950 border border-slate-600 flex items-center justify-center text-[10px] text-slate-300 transition shrink-0">
+                        <i class="fa-solid fa-minus text-icon"></i>
+                    </button>
+                `;
+            }
+
+            if (node.type === 'root') {
+                styleClasses = "bg-gradient-to-r from-emerald-950/90 to-teal-950/90 border-2 border-emerald-500/60 text-white font-bold text-lg px-6 py-4 rounded-2xl shadow-emerald-950/50";
+            } else if (node.type === 'branch') {
+                styleClasses = "bg-slate-900/90 border border-slate-700/80 text-emerald-40-0 font-semibold text-sm px-4 py-3 rounded-xl text-slate-100 hover:border-emerald-500/50";
+            } else if (node.type === 'subbranch') {
+                styleClasses = "bg-slate-900/80 border border-slate-800 text-teal-300 font-medium text-xs px-3.5 py-2.5 rounded-lg";
+            } else {
+                styleClasses = "bg-slate-900/60 border border-slate-800/80 text-slate-300 text-xs px-3 py-2 rounded-lg hover:border-slate-700";
+            }
+
+            nodeEl.innerHTML = `
+                <div class="tree-node-content ${styleClasses} flex items-center gap-2 cursor-pointer">
+                    <span>${node.title}</span>
+                    ${toggleBtn}
+                </div>
+            `;
+
+            nodeWrapper.appendChild(nodeEl);
+
+            // Children container
+            if (hasChildren) {
+                const childrenContainer = document.createElement('div');
+                childrenContainer.className = 'node-children flex flex-col ml-12 pl-6 relative border-l border-transparent';
+                childrenContainer.id = `children-${node.id}`;
+
+                node.children.forEach(child => {
+                    childrenContainer.appendChild(renderNode(child));
+                });
+
+                nodeWrapper.appendChild(childrenContainer);
+            }
+
+            return nodeWrapper;
+        }
+
+        // Toggle Expand/Collapse Node
+        window.toggleNode = function(e, nodeId) {
+            e.stopPropagation();
+            const wrapper = document.getElementById(`wrapper-${nodeId}`);
+            const btnIcon = wrapper.querySelector(`#node-${nodeId} .text-icon`);
+
+            if (wrapper.classList.contains('collapsed')) {
+                wrapper.classList.remove('collapsed');
+                if (btnIcon) {
+                    btnIcon.classList.remove('fa-plus');
+                    btnIcon.classList.add('fa-minus');
+                }
+            } else {
+                wrapper.classList.add('collapsed');
+                if (btnIcon) {
+                    btnIcon.classList.remove('fa-minus');
+                    btnIcon.classList.add('fa-plus');
+                }
+            }
+
+            // Request animation frame to re-draw connector lines smoothly
+            requestAnimationFrame(() => {
+                drawConnections();
+            });
+        };
+
+        // Expand All
+        document.getElementById('btn-expand-all').addEventListener('click', () => {
+            document.querySelectorAll('.tree-node-wrapper').forEach(el => {
+                el.classList.remove('collapsed');
+                const btnIcon = el.querySelector('.text-icon');
+                if (btnIcon) {
+                    btnIcon.classList.remove('fa-plus');
+                    btnIcon.classList.add('fa-minus');
+                }
+            });
+            drawConnections();
+        });
+
+        // Collapse All (except Root)
+        document.getElementById('btn-collapse-all').addEventListener('click', () => {
+            document.querySelectorAll('.tree-node-wrapper').forEach(el => {
+                if (el.id !== 'wrapper-root') {
+                    el.classList.add('collapsed');
+                    const btnIcon = el.querySelector('.text-icon');
+                    if (btnIcon) {
+                        btnIcon.classList.remove('fa-minus');
+                        btnIcon.classList.add('fa-plus');
+                    }
+                }
+            });
+            drawConnections();
+        });
+
+        // Draw Curved Connecting Lines via SVG
+        function drawConnections() {
+            // Update SVG Canvas Size to match container
+            const containerRect = treeContainer.getBoundingClientRect();
+            svgCanvas.setAttribute('width', treeContainer.scrollWidth);
+            svgCanvas.setAttribute('height', treeContainer.scrollHeight);
+
+            let pathsHTML = '';
+
+            function connectNodes(parentNode) {
+                const parentId = parentNode.id;
+                const parentWrapper = document.getElementById(`wrapper-${parentId}`);
+                
+                if (parentWrapper.classList.contains('collapsed')) return;
+
+                const parentCard = document.getElementById(`node-${parentId}`).querySelector('.tree-node-content');
+                const parentRect = parentCard.getBoundingClientRect();
+
+                // Compute relative coordinates
+                const pBox = treeContainer.getBoundingClientRect();
+                const startX = (parentRect.right - pBox.left) / treeScale;
+                const startY = (parentRect.top + parentRect.height / 2 - pBox.top) / treeScale;
+
+                if (parentNode.children) {
+                    parentNode.children.forEach(child => {
+                        const childCard = document.getElementById(`node-${child.id}`)?.querySelector('.tree-node-content');
+                        if (!childCard) return;
+
+                        const childRect = childCard.getBoundingClientRect();
+                        const endX = (childRect.left - pBox.left) / treeScale;
+                        const endY = (childRect.top + childRect.height / 2 - pBox.top) / treeScale;
+
+                        // Cubic Bezier curve control points
+                        const dx = endX - startX;
+                        const controlX1 = startX + dx * 0.45;
+                        const controlX2 = endX - dx * 0.45;
+
+                        const pathData = `M ${startX} ${startY} C ${controlX1} ${startY}, ${controlX2} ${endY}, ${endX} ${endY}`;
+                        
+                        pathsHTML += `<path d="${pathData}" fill="none" stroke="#10b981" stroke-opacity="0.35" stroke-width="2" stroke-linecap="round"/>`;
+
+                        // Recursively draw children
+                        connectNodes(child);
+                    });
+                }
+            }
+
+            connectNodes(mindMapData);
+            svgCanvas.innerHTML = pathsHTML;
+        }
+
+        // Apply Transform Matrix to Tree Container
+        function updateTreeTransform() {
+            treeContainer.style.transform = `translate(${treePanX}px, ${treePanY}px) scale(${treeScale})`;
+            document.getElementById('tree-zoom-level').textContent = `${Math.round(treeScale * 100)}%`;
+            drawConnections();
+        }
+
+        // Reset View
+        function resetTreeView() {
+            treeScale = 1;
+            treePanX = 60;
+            treePanY = viewport.clientHeight / 2 - 200;
+            updateTreeTransform();
+        }
+
+        document.getElementById('btn-reset-view').addEventListener('click', resetTreeView);
+
+        // Zoom Controls
+        document.getElementById('zoom-in').addEventListener('click', () => {
+            treeScale = Math.min(treeScale + 0.15, 2.5);
+            updateTreeTransform();
+        });
+
+        document.getElementById('zoom-out').addEventListener('click', () => {
+            treeScale = Math.max(treeScale - 0.15, 0.4);
+            updateTreeTransform();
+        });
+
+        // Mouse Drag / Pan Logic
+        viewport.addEventListener('mousedown', (e) => {
+            if (activeView === 'tree') {
+                if (e.target.closest('.tree-node-content') || e.target.closest('button')) return;
+                isDragging = true;
+                startX = e.clientX - treePanX;
+                startY = e.clientY - treePanY;
+            } else {
+                isImgDragging = true;
+                imgStartX = e.clientX - imgPanX;
+                imgStartY = e.clientY - imgPanY;
+            }
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (isDragging && activeView === 'tree') {
+                treePanX = e.clientX - startX;
+                treePanY = e.clientY - startY;
+                updateTreeTransform();
+            } else if (isImgDragging && activeView === 'image') {
+                imgPanX = e.clientX - imgStartX;
+                imgPanY = e.clientY - imgStartY;
+                updateImageTransform();
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            isImgDragging = false;
+        });
+
+        // Wheel Zoom Logic
+        viewport.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            if (activeView === 'tree') {
+                const zoomFactor = e.deltaY < 0 ? 1.08 : 0.92;
+                const newScale = Math.max(0.3, Math.min(2.5, treeScale * zoomFactor));
+
+                // Mouse pivot zoom calculation
+                const rect = viewport.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                treePanX = mouseX - (mouseX - treePanX) * (newScale / treeScale);
+                treePanY = mouseY - (mouseY - treePanY) * (newScale / treeScale);
+                treeScale = newScale;
+
+                updateTreeTransform();
+            } else {
+                const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+                imgScale = Math.max(0.4, Math.min(4, imgScale * zoomFactor));
+                updateImageTransform();
+            }
+        }, { passive: false });
+
+        // Switch View Mode Logic
+        btnTreeView.addEventListener('click', () => {
+            activeView = 'tree';
+            btnTreeView.className = "px-3 py-1.5 rounded-lg font-medium bg-emerald-600 text-white transition flex items-center gap-1.5 shadow-sm";
+            btnImageView.className = "px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white transition flex items-center gap-1.5";
+            
+            imageViewerContainer.classList.add('hidden');
+            treeTools.classList.remove('hidden');
+            treeZoomControls.classList.remove('hidden');
+            requestAnimationFrame(drawConnections);
+        });
+
+        btnImageView.addEventListener('click', () => {
+            activeView = 'image';
+            btnImageView.className = "px-3 py-1.5 rounded-lg font-medium bg-emerald-600 text-white transition flex items-center gap-1.5 shadow-sm";
+            btnTreeView.className = "px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white transition flex items-center gap-1.5";
+
+            imageViewerContainer.classList.remove('hidden');
+            treeTools.classList.add('hidden');
+            treeZoomControls.classList.add('hidden');
+            resetImageTransform();
+        });
+
+        // Image Zoom Logic
+        const imgWrapper = document.getElementById('image-transform-wrapper');
+        const imgZoomLevel = document.getElementById('img-zoom-level');
+
+        function updateImageTransform() {
+            imgWrapper.style.transform = `translate(${imgPanX}px, ${imgPanY}px) scale(${imgScale})`;
+            imgZoomLevel.textContent = `${Math.round(imgScale * 100)}%`;
+        }
+
+        function resetImageTransform() {
+            imgScale = 1;
+            imgPanX = 0;
+            imgPanY = 0;
+            updateImageTransform();
+        }
+
+        document.getElementById('img-zoom-in').addEventListener('click', () => {
+            imgScale = Math.min(imgScale + 0.25, 4);
+            updateImageTransform();
+        });
+
+        document.getElementById('img-zoom-out').addEventListener('click', () => {
+            imgScale = Math.max(imgScale - 0.25, 0.4);
+            updateImageTransform();
+        });
+
+        document.getElementById('img-zoom-reset').addEventListener('click', resetImageTransform);
+
+        // Initialize Tree on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            treeRoot.appendChild(renderNode(mindMapData));
+            resetTreeView();
+
+            // Re-render lines on window resize
+            window.addEventListener('resize', () => {
+                drawConnections();
+            });
+        });
+    </script>
+</body>
+</html>
