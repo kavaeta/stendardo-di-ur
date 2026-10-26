@@ -3,134 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz: Lo Stendardo di Ur</title>
+    <title>Artefatto NotebookLM - Quiz Stendardo di Ur</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Font Awesome per le icone -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         :root {
-            --lapis-blue: #1d3557;
-            --calcare-red: #e63946;
-            --shell-beige: #f1faee;
-            --bitumen-black: #111111;
-            --gold: #e9c46a;
+            --primary: #1a73e8;
+            --primary-hover: #1557b0;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-main: #202124;
+            --text-secondary: #5f6368;
+            --correct-bg: #e6f4ea;
+            --correct-border: #34a853;
+            --wrong-bg: #fce8e6;
+            --wrong-border: #ea4335;
+            --border-light: #dadce0;
         }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--shell-beige);
-            color: var(--bitumen-black);
+
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
+            padding: 0;
         }
-        .quiz-container {
-            background-color: white;
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+
+        .container {
             max-width: 800px;
-            width: 100%;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            font-family: 'Google Sans', sans-serif;
+        }
+
+        .header h1 {
+            color: var(--text-main);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .question-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-light);
             border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-            padding: 30px;
-            border-top: 8px solid var(--lapis-blue);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
         }
-        h1 {
-            color: var(--lapis-blue);
-            text-align: center;
-            margin-bottom: 5px;
+
+        .question-card h3 {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
         }
-        p.subtitle {
-            text-align: center;
-            color: #555;
-            margin-bottom: 30px;
-            font-style: italic;
-        }
-        .question-block {
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #ddd;
-        }
-        .question-text {
-            font-size: 1.1em;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--lapis-blue);
-        }
-        .options {
+
+        .options-group {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 0.75rem;
         }
+
         .option-label {
             display: flex;
             align-items: center;
-            padding: 10px 15px;
-            background-color: #f8f9fa;
-            border: 2px solid transparent;
-            border-radius: 6px;
+            padding: 1rem;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: background-color 0.2s, border-color 0.2s;
+            font-size: 1rem;
         }
+
         .option-label:hover {
-            background-color: #e9ecef;
+            background-color: #f1f3f4;
         }
-        input[type="radio"] {
-            margin-right: 15px;
+
+        .option-label input[type="radio"] {
+            margin-right: 1rem;
             transform: scale(1.2);
             cursor: pointer;
         }
+
+        /* Stili per il feedback */
+        .option-label.correct {
+            background-color: var(--correct-bg);
+            border-color: var(--correct-border);
+            font-weight: 500;
+        }
+
+        .option-label.wrong {
+            background-color: var(--wrong-bg);
+            border-color: var(--wrong-border);
+        }
+
+        .feedback-box {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1.25rem;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary);
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .feedback-box strong {
+            color: var(--text-main);
+            display: block;
+            margin-bottom: 0.5rem;
+            font-family: 'Google Sans', sans-serif;
+        }
+
         .btn-submit {
-            background-color: var(--lapis-blue);
+            display: block;
+            width: 100%;
+            background-color: var(--primary);
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 1.1em;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            transition: background-color 0.3s;
-            margin-top: 20px;
-        }
-        .btn-submit:hover {
-            background-color: #14243b;
-        }
-        #result-container {
-            display: none;
-            text-align: center;
-            margin-top: 30px;
-            padding: 20px;
-            background-color: var(--lapis-blue);
-            color: white;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-family: 'Google Sans', sans-serif;
+            font-weight: 500;
             border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 2rem;
+            box-shadow: 0 4px 6px rgba(26, 115, 232, 0.2);
         }
-        .score {
-            font-size: 2em;
-            font-weight: bold;
-            color: var(--gold);
+
+        .btn-submit:hover {
+            background-color: var(--primary-hover);
         }
-        .correct-answer {
-            background-color: #d4edda !important;
-            border-color: #28a745 !important;
+
+        .btn-submit:disabled {
+            background-color: #9aa0a6;
+            cursor: not-allowed;
+            box-shadow: none;
         }
-        .wrong-answer {
-            background-color: #f8d7da !important;
-            border-color: #dc3545 !important;
+
+        #results-summary {
+            display: none;
+            background-color: var(--card-bg);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+            box-shadow: 0 8px 24px rgba(26, 115, 232, 0.15);
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-family: 'Google Sans', sans-serif;
+            font-weight: 700;
+            margin: 0 auto 1.5rem auto;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
-<div class="quiz-container">
-    <h1>Quiz: Lo Stendardo di Ur</h1>
-    <p class="subtitle">Metti alla prova la tua conoscenza sul capolavoro dell'arte sumera</p>
-    
+<div class="container">
+    <div class="header">
+        <h1>Lo Stendardo di Ur</h1>
+        <p>Verifica le tue conoscenze e leggi le revisioni per imparare dai tuoi errori.</p>
+    </div>
+
     <form id="quiz-form">
-        <!-- Generazione delle 16 domande -->
-        <div id="questions-wrapper"></div>
-        <button type="button" class="btn-submit" onclick="calculateScore()">Invia e vedi i risultati</button>
+        <div id="quiz-content"></div>
+        <button type="button" id="submit-btn" class="btn-submit" onclick="checkAnswers()">Verifica Risposte</button>
     </form>
 
-    <div id="result-container">
-        <h2>Risultato Finale</h2>
-        <p>Hai totalizzato <span class="score" id="score-display">0</span> su 16.</p>
-        <p id="feedback-message"></p>
+    <div id="results-summary">
+        <div class="score-circle">
+            <span id="score-text">0/16</span>
+        </div>
+        <h2 style="margin-bottom: 1rem; font-family: 'Google Sans', sans-serif;">Risultato Finale</h2>
+        <p id="score-feedback" style="font-size: 1.1rem; color: var(--text-secondary);"></p>
+        <p style="margin-top: 1rem; font-weight: 500;">Scorri in alto per leggere le revisioni alle tue risposte.</p>
     </div>
 </div>
 
@@ -139,92 +222,108 @@
         {
             q: "1. In quale necropoli è stato ritrovato lo Stendardo di Ur?",
             options: ["Necropoli reale di Tebe", "Necropoli reale di Ur", "Valle dei Re", "Necropoli di Giza"],
-            a: 1
+            a: 1,
+            explanation: "Corretto! Lo Stendardo di Ur è un reperto archeologico sumero rinvenuto proprio nella Necropoli reale di Ur. Le altre opzioni (Tebe, Valle dei Re, Giza) sono tutte famose necropoli legate all'Antico Egitto, non alla Mesopotamia."
         },
         {
-            q: "2. A quale periodo risale storicamente lo Stendardo di Ur?",
+            q: "2. A quale periodo risale storicamente l'opera?",
             options: ["1000 a.C.", "1500 a.C.", "2500 a.C. circa", "3500 a.C."],
-            a: 2
+            a: 2,
+            explanation: "La datazione corretta è il 2500 a.C. circa, nel cuore dello sviluppo della civiltà sumerica."
         },
         {
             q: "3. Da quanti pannelli principali di legno è costituito l'oggetto?",
             options: ["Due", "Tre", "Quattro", "Sei"],
-            a: 2
+            a: 2,
+            explanation: "È costituito da quattro pannelli di legno, composti a cassetta (due principali rettangolari e due laterali trapezoidali)."
         },
         {
             q: "4. Qual era la funzione originaria e accertata dello Stendardo?",
             options: ["Cassa di risonanza per arpa", "Stendardo da processione", "Scatola per gioielli regali", "Non è ancora conosciuta con certezza"],
-            a: 3
+            a: 3,
+            explanation: "Nonostante il nome 'Stendardo', ancora oggi non conosciamo con certezza la sua funzione. Potrebbe essere stato issato in processione, oppure esposto in un palazzo, o addirittura fungere da cassa di risonanza per uno strumento."
         },
         {
             q: "5. Quali di questi materiali preziosi NON è stato usato per l'intarsio?",
             options: ["Lapislazzuli", "Oro zecchino", "Conchiglie marine", "Pietra calcarea rossastra"],
-            a: 1
+            a: 1,
+            explanation: "L'oro zecchino non è presente. L'opera è decorata a intarsio utilizzando esclusivamente lapislazzuli (blu), conchiglie marine indiane (bianco/beige) e pietra calcarea (rossastra)."
         },
         {
             q: "6. Con quale materiale sono legati tra loro gli intarsi?",
             options: ["Argilla cruda", "Pasta nera di bitume", "Stucco di gesso", "Resina di pino"],
-            a: 1
+            a: 1,
+            explanation: "I sumeri usavano la pasta nera di bitume come collante e legante per tenere fermi i frammenti di pietra e conchiglia sulla base di legno."
         },
         {
             q: "7. In quanti registri (fasce) sono divisi i due pannelli principali?",
             options: ["Due", "Tre", "Quattro", "Cinque"],
-            a: 1
+            a: 1,
+            explanation: "I pannelli principali sono divisi ciascuno in tre registri (fasce orizzontali) sovrapposti."
         },
         {
             q: "8. Quali sono i due temi contrapposti raffigurati sui pannelli principali?",
             options: ["Guerra e Pace", "Vita e Morte", "Terra e Cielo", "Caccia e Agricoltura"],
-            a: 0
+            a: 0,
+            explanation: "I due lati principali del reperto sono noti proprio come 'Pannello della guerra' (che mostra l'esercito e i carri) e 'Pannello della pace' (che mostra un banchetto)."
         },
         {
             q: "9. In che direzione vanno 'lette' le scene dei pannelli?",
             options: ["Da destra a sinistra, dall'alto al basso", "Da sinistra a destra, dal basso verso l'alto", "A spirale dal centro verso l'esterno", "Dall'alto verso il basso"],
-            a: 1
+            a: 1,
+            explanation: "La narrazione sumera in quest'opera procede da sinistra a destra e parte dal basso (il registro inferiore) verso l'alto, culminando con la figura del re nel registro superiore."
         },
         {
             q: "10. Cosa è raffigurato nella fascia più bassa del Pannello della guerra?",
             options: ["Soldati in marcia", "Schiavi che portano armi", "Quattro carri militari trainati da asini", "Il re che punisce i prigionieri"],
-            a: 2
+            a: 2,
+            explanation: "Nel registro inferiore della Guerra si osservano quattro potenti carri militari con ruote piene, trainati da asini che travolgono i nemici."
         },
         {
-            q: "11. Nel Pannello della guerra, come viene evidenziato il re rispetto agli altri personaggi?",
+            q: "11. Nel Pannello della guerra, come viene evidenziato il re rispetto agli altri?",
             options: ["Indossa un mantello d'oro", "Raffigurato più alto in virtù del suo ruolo", "È l'unico a cavallo", "Ha un'aureola di lapislazzuli"],
-            a: 1
+            a: 1,
+            explanation: "Il re (al centro del registro superiore) obbedisce alle regole della proporzione gerarchica: è raffigurato più alto di tutti gli altri per evidenziare il suo ruolo superiore."
         },
         {
             q: "12. Cos'è il 'kaunakes' indossato dai personaggi nel Pannello della pace?",
             options: ["Un elmetto di bronzo", "Una sottana di vello di pecora", "Una collana di conchiglie", "Un mantello di pelle bovina"],
-            a: 1
+            a: 1,
+            explanation: "Il kaunakes è il tipico abito sumero: una gonna/sottana realizzata in vello di pecora, con i classici bioccoli di lana."
         },
         {
             q: "13. Chi allieta gli ospiti nel registro superiore del Pannello della pace?",
             options: ["Dei danzatori", "Un arpista e una cantante", "Dei giocolieri", "Un flautista"],
-            a: 1
+            a: 1,
+            explanation: "Sulla destra del registro superiore, all'estremità della scena del banchetto, si notano un arpista (con un'arpa simile a quelle trovate a Ur) e una cantante."
         },
         {
             q: "14. Secondo il testo, lo stile della pittura sumera in quest'opera:",
             options: ["Ricerca la prospettiva perfetta", "Evita ogni forma di illusionismo e profondità", "Usa il chiaroscuro per dare volume", "È identico in tutto e per tutto a quello egizio"],
-            a: 1
+            a: 1,
+            explanation: "Gli artisti sumeri evitano consapevolmente la ricerca della profondità e dell'illusionismo tridimensionale, preferendo scene bidimensionali ma con alcuni dettagli naturalistici (come i malleoli delle caviglie)."
         },
         {
             q: "15. Come viene rappresentato l'occhio delle figure umane nello Stendardo?",
             options: ["Di profilo", "Chiuso", "Sempre in posizione frontale", "Stilizzato a forma di mandorla cava"],
-            a: 2
+            a: 2,
+            explanation: "Come nell'arte egizia, il corpo è rappresentato per aspetti: le gambe e la testa sono di profilo, mentre il torso e l'occhio sono sempre rappresentati frontalmente."
         },
         {
-            q: "16. Rispetto alla pittura egizia (che è longilinea), come appaiono le figure sumere?",
+            q: "16. Rispetto alla pittura egizia (longilinea), come appaiono le figure sumere?",
             options: ["Ancora più allungate", "Molto realistiche", "Brevilinee e tarchiate", "Quasi astratte"],
-            a: 2
+            a: 2,
+            explanation: "Nell'arte sumerica conta la monumentalità dell'insieme. Per questo le figure appaiono brevilinee (tarchiate), con il tronco che prevale nettamente sugli arti, a differenza dell'elegante slancio delle figure egizie."
         }
     ];
 
-    const wrapper = document.getElementById("questions-wrapper");
+    const quizContent = document.getElementById('quiz-content');
 
-    // Genera l'HTML per le domande
+    // Genera l'HTML dinamicamente
     quizData.forEach((item, index) => {
-        let optionsHtml = '';
+        let optionsHTML = '';
         item.options.forEach((opt, optIndex) => {
-            optionsHtml += `
+            optionsHTML += `
                 <label class="option-label" id="label-q${index}-o${optIndex}">
                     <input type="radio" name="q${index}" value="${optIndex}">
                     ${opt}
@@ -232,62 +331,82 @@
             `;
         });
 
-        const questionHtml = `
-            <div class="question-block" id="question-${index}">
-                <div class="question-text">${item.q}</div>
-                <div class="options">
-                    ${optionsHtml}
+        const questionHTML = `
+            <div class="question-card" id="card-${index}">
+                <h3>${item.q}</h3>
+                <div class="options-group">
+                    ${optionsHTML}
+                </div>
+                <div class="feedback-box" id="feedback-${index}">
+                    <strong>Revisione:</strong>
+                    ${item.explanation}
                 </div>
             </div>
         `;
-        wrapper.innerHTML += questionHtml;
+        quizContent.innerHTML += questionHTML;
     });
 
-    function calculateScore() {
+    function checkAnswers() {
+        const submitBtn = document.getElementById('submit-btn');
+        submitBtn.disabled = true; // Previeni doppi click
+        submitBtn.textContent = "Risultati calcolati";
+
         let score = 0;
-        
+
         quizData.forEach((item, index) => {
-            const selected = document.querySelector(`input[name="q${index}"]:checked`);
+            const selectedInput = document.querySelector(`input[name="q${index}"]:checked`);
+            const feedbackBox = document.getElementById(`feedback-${index}`);
             
-            // Resetta colori precedenti (in caso di doppio click)
-            item.options.forEach((_, optIndex) => {
-                document.getElementById(`label-q${index}-o${optIndex}`).classList.remove('correct-answer', 'wrong-answer');
-            });
+            // Disabilita tutti i radio button
+            const allRadios = document.querySelectorAll(`input[name="q${index}"]`);
+            allRadios.forEach(radio => radio.disabled = true);
 
-            // Evidenzia la risposta corretta sempre
-            document.getElementById(`label-q${index}-o${item.a}`).classList.add('correct-answer');
+            // Segna in verde la risposta corretta (sempre e comunque)
+            const correctLabel = document.getElementById(`label-q${index}-o${item.a}`);
+            correctLabel.classList.add('correct');
+            
+            // Aggiungi un'icona alla risposta corretta
+            correctLabel.innerHTML += ' <i class="fa-solid fa-check" style="margin-left: auto; color: #1e8e3e;"></i>';
 
-            if (selected) {
-                const selectedValue = parseInt(selected.value);
-                if (selectedValue === item.a) {
+            if (selectedInput) {
+                const selectedVal = parseInt(selectedInput.value);
+                if (selectedVal === item.a) {
                     score++;
                 } else {
-                    // Segna in rosso quella sbagliata
-                    document.getElementById(`label-q${index}-o${selectedValue}`).classList.add('wrong-answer');
+                    // Se l'utente ha sbagliato, colora di rosso la sua scelta
+                    const wrongLabel = document.getElementById(`label-q${index}-o${selectedVal}`);
+                    wrongLabel.classList.add('wrong');
+                    wrongLabel.innerHTML += ' <i class="fa-solid fa-xmark" style="margin-left: auto; color: #d93025;"></i>';
                 }
+            } else {
+                // Se non ha risposto
+                feedbackBox.innerHTML = `<strong>Nessuna risposta data.</strong> ${item.explanation}`;
             }
+
+            // Mostra il box con la spiegazione
+            feedbackBox.style.display = "block";
         });
 
-        // Mostra il risultato
-        const resultContainer = document.getElementById("result-container");
-        const scoreDisplay = document.getElementById("score-display");
-        const feedbackMsg = document.getElementById("feedback-message");
-        
-        scoreDisplay.textContent = score;
-        resultContainer.style.display = "block";
+        // Mostra il pannello del punteggio finale
+        const resultsSummary = document.getElementById('results-summary');
+        const scoreText = document.getElementById('score-text');
+        const scoreFeedback = document.getElementById('score-feedback');
 
-        if (score === 16) {
-            feedbackMsg.textContent = "Perfetto! Hai una conoscenza da vero archeologo mesopotamico!";
+        scoreText.textContent = `${score}/${quizData.length}`;
+        resultsSummary.style.display = "block";
+
+        if(score === quizData.length) {
+            scoreFeedback.innerHTML = "Eccezionale! Padroneggi l'argomento alla perfezione. Hai lo stesso livello di un artefatto NotebookLM!";
         } else if (score >= 11) {
-            feedbackMsg.textContent = "Ottimo lavoro! Conosci molto bene l'arte sumera.";
+            scoreFeedback.innerHTML = "Ottimo lavoro! Ti ricordi molto bene i dettagli storici e stilistici dello Stendardo.";
         } else if (score >= 6) {
-            feedbackMsg.textContent = "Discreto, ma puoi ripassare alcuni dettagli di quest'opera magnifica.";
+            scoreFeedback.innerHTML = "Hai una buona conoscenza di base, ma ci sono vari dettagli da ripassare leggendo le revisioni.";
         } else {
-            feedbackMsg.textContent = "Forse è il caso di rileggere gli appunti sullo Stendardo di Ur!";
+            scoreFeedback.innerHTML = "Nessun problema, l'importante è imparare! Leggi attentamente le spiegazioni fornite qui sopra.";
         }
-        
-        // Scrolla in basso per far vedere il risultato
-        resultContainer.scrollIntoView({ behavior: 'smooth' });
+
+        // Scrolla fluido in fondo ai risultati
+        resultsSummary.scrollIntoView({ behavior: 'smooth' });
     }
 </script>
 
